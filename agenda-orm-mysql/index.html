@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda (TypeORM + MySQL)</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input, button { margin: 5px; padding: 8px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; }
+    th { background-color: #f4f4f4; }
+  </style>
+</head>
+<body>
+
+  <h1>Agenda de Contactos</h1>
+
+  <form onsubmit="guardarContacto(); return false;">
+    <input type="hidden" id="id">
+    <input type="text" id="nombres" placeholder="Nombres" required>
+    <input type="text" id="apellidos" placeholder="Apellidos" required>
+    <input type="date" id="fecha_nacimiento">
+    <input type="text" id="direccion" placeholder="Dirección">
+    <input type="text" id="celular" placeholder="Celular">
+    <input type="email" id="correo" placeholder="Correo">
+    <button type="submit">Guardar</button>
+    <button type="button" onclick="limpiarFormulario()">Cancelar</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombres</th>
+        <th>Apellidos</th>
+        <th>Fecha Nac.</th>
+        <th>Dirección</th>
+        <th>Celular</th>
+        <th>Correo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-contactos"></tbody>
+  </table>
+
+  <script>
+    const API_URL = "http://localhost:3000/agenda";
+
+    const cargarContactos = async () => {
+      const res = await fetch(API_URL);
+      const contactos = await res.json();
+
+      const tabla = document.getElementById("tabla-contactos");
+      tabla.innerHTML = "";
+
+      contactos.forEach(c => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${c.nombres}</td>
+          <td>${c.apellidos}</td>
+          <td>${c.fecha_nacimiento?.split("T")[0]}</td>
+          <td>${c.direccion}</td>
+          <td>${c.celular}</td>
+          <td>${c.correo}</td>
+          <td>
+            <button onclick='editar(${JSON.stringify(c)})'>Editar</button>
+            <button onclick='eliminar(${c.id})'>Eliminar</button>
+          </td>
+        `;
+        tabla.appendChild(fila);
+      });
+    };
+
+    const guardarContacto = async () => {
+      const id = document.getElementById("id").value;
+      const contacto = {
+        nombres: document.getElementById("nombres").value,
+        apellidos: document.getElementById("apellidos").value,
+        fecha_nacimiento: document.getElementById("fecha_nacimiento").value,
+        direccion: document.getElementById("direccion").value,
+        celular: document.getElementById("celular").value,
+        correo: document.getElementById("correo").value,
+      };
+
+      const metodo = id ? "PUT" : "POST";
+      const url = id ? `${API_URL}/${id}` : API_URL;
+
+      await fetch(url, {
+        method: metodo,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contacto),
+      });
+
+      limpiarFormulario();
+      cargarContactos();
+    };
+
+    const editar = (contacto) => {
+      document.getElementById("id").value = contacto.id;
+      document.getElementById("nombres").value = contacto.nombres;
+      document.getElementById("apellidos").value = contacto.apellidos;
+      document.getElementById("fecha_nacimiento").value = contacto.fecha_nacimiento?.split("T")[0];
+      document.getElementById("direccion").value = contacto.direccion;
+      document.getElementById("celular").value = contacto.celular;
+      document.getElementById("correo").value = contacto.correo;
+    };
+
+    const eliminar = async (id) => {
+      if (confirm("¿Deseas eliminar este contacto?")) {
+        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        cargarContactos();
+      }
+    };
+
+    const limpiarFormulario = () => {
+      document.getElementById("id").value = "";
+      document.getElementById("nombres").value = "";
+      document.getElementById("apellidos").value = "";
+      document.getElementById("fecha_nacimiento").value = "";
+      document.getElementById("direccion").value = "";
+      document.getElementById("celular").value = "";
+      document.getElementById("correo").value = "";
+    };
+
+    cargarContactos();
+  </script>
+
+</body>
+</html>
