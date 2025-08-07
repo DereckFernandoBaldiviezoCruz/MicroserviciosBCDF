@@ -6,9 +6,9 @@ const AppDataSource = new DataSource({
   host: "localhost",
   port: 3306,
   username: "root",
-  password: "", // tu contraseña
+  password: "",
   database: "agenda_db",
-  synchronize: true, // genera las tablas automáticamente
+  synchronize: true,
   logging: false,
   entities: [Agenda],
 });
