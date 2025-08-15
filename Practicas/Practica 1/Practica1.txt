@@ -1,0 +1,149 @@
+--1--
+db.alumnos.insertOne({
+    nombres: "Maria",
+    apellidos: "Torres",
+    sexo: "F",
+    materias: ["SIS386", "SIS100"],
+    padre: { nombre: "Juan", apellido: "Torres" }
+})
+
+--2--
+db.alumnos.insertMany([
+    { nombres: "Josefa", apellidos: "Pérez", sexo: "F", casado: true, fecha_nacimiento: new Date("1999-03-20"), materias: ["COM350"], padre: { nombre: "Pedro", apellido: "Pérez" } },
+    { nombres: "Marco", apellidos: "Torres", sexo: "M", fecha_nacimiento: new Date("2002-11-15"), materias: ["SIS257", "SIS00"], padre: { nombre: "Miguel", apellido: "Torres" } },
+    { nombres: "Leonor", apellidos: "Ramírez", sexo: "F", fecha_nacimiento: new Date("2002-04-05"), materias: ["SIS258", "COM350"], padre: { nombre: "Carlos", apellido: "Ramírez" } },
+  { nombres: "Luisa", apellidos: "Martinez", sexo: "F", casado: false, fecha_nacimiento: new Date("1989-04-20"), materias: ["COM350"], padre: { nombre: "Lalo", apellido: "Martinez" } },
+  { nombres: "Carla", apellidos: "Leon", sexo: "F", fecha_nacimiento: new Date("1997-04-20"), materias: ["COM350"], padre: { nombre: "Pedro", apellido: "Leon" } },
+])
+
+--3--
+db.alumnos.insertOne({
+    nombres: "Dereck",
+    apellidos: "López",
+    sexo: "M",
+    casado: false,
+    fecha_nacimiento: new Date("2001-05-10"),
+    materias: ["SIS256", "SIS258"]
+})
+
+--4--
+db.alumnos.insertOne({
+    nombres: "Marco",
+    apellidos: "López",
+    sexo: "M",
+    casado: true,
+    fecha_nacimiento: new Date("1990-05-10"),
+    materias: ["SIS256", "SIS258"],
+    padre: { nombre: "Juan", apellido: "López" }
+})
+
+--5--
+db.alumnos.insertOne({
+    nombres: "Carlos",
+    apellidos: "Perez",
+    sexo: "M",
+    casado: false,
+    fecha_nacimiento: new Date("2001-05-10"),
+    materias: ["SIS256", "SIS258","SIS101","SIS103"],
+    padre: { nombre: "Carlos", apellido: "Perez" }
+})
+
+--6--
+db.alumnos.insertOne({
+    nombres: "Carlos",
+    apellidos: "Leon",
+    sexo: "M",
+    casado: false,
+    fecha_nacimiento: new Date("2001-05-10"),
+    materias: ["COM350"],
+    padre: { nombre: "Juan", apellido: "Leon" }
+})
+
+--7--
+db.alumnos.insertMany([
+    { nombres: "Marta", apellidos: "Pérez", sexo: "F", casado: true, fecha_nacimiento: new Date("1999-03-20"), materias: ["COM350"], padre: { nombre: "Luis", apellido: "Pérez" } },
+    { nombres: "Joselo", apellidos: "Torres", sexo: "M", casado: false, fecha_nacimiento: new Date("2002-11-15"), materias: ["SIS256", "SIS00"], padre: { nombre: "Miguel", apellido: "Torres" } }
+    ])
+
+--8--
+db.alumnos.find({casado:false, materias: "SIS256"})
+
+--9--
+db.alumnos.countDocuments({ $expr: { $gt: [ { $size: "$materias" }, 2 ] } })
+
+
+--10--
+db.alumnos.find({}, { _id: 0, nombres: 1, fecha_nacimiento: 1 }).sort({ fecha_nacimiento: 1 }).limit(10)
+
+--11--
+db.alumnos.find({materias: ["COM350", "SIS100"]})
+
+--12--
+db.alumnos.find({ sexo: "F" }, { _id: 0, nombres: 1, sexo: 1 })
+
+--13--
+db.alumnos.find().sort({ apellidos: 1 })
+
+--14--
+db.alumnos.find(
+  { fecha_nacimiento: { $gte: new Date("1998-01-01"), $lte: new Date("2003-12-31") } },
+  { _id: 0, nombres: 1, fecha_nacimiento: 1 }
+)
+
+--15--
+db.alumnos.find({ apellidos: { $regex: "ez$", $options: "i" }}, { _id: 0, nombres: 1, apellidos: 1 })
+
+--16--
+db.alumnos.countDocuments({ casado: true, materias: "SIS258"})
+
+--17--
+db.alumnos.updateMany(
+  { nombres: "Luis" },
+  { $set: { nombres: "Luis Alberto" } })
+
+--18--
+db.alumnos.updateMany(
+  { materias: "COM350" },
+  { $addToSet: { materias: "SIS777" } }
+)
+
+--19--
+db.alumnos.updateMany(
+  { $expr: { $lt: [ { $size: "$materias" }, 2 ] } },
+  { $set: { casado: false } }
+)
+
+--20--
+db.alumnos.updateMany(
+  { materias: "SIS256" },
+  { $pull: { materias: "SIS256" } }
+)
+
+--21--
+db.alumnos.updateMany({ "padre.nombre": "Juan" }, { $set: { "padre.nombre": "Juan José" } })
+
+--22--
+db.alumnos.updateMany(
+  {},                       // Filtra todos los documentos
+  { $set: { activo: true } } // Agrega el campo activo: true
+)
+
+--23--
+db.alumnos.deleteMany(
+  { sexo: "Hombre" } // O "M", según cómo lo tengas guardado
+)
+
+--24--
+db.alumnos.deleteMany({ materias: "SIS777" })
+
+--25--
+db.alumnos.deleteMany({ "padre.apellido": "Ramírez" })
+
+--26--
+db.alumnos.deleteMany({ fecha_nacimiento: { $gt: ISODate("2004-12-31T23:59:59Z") } })
+
+--27--
+db.alumnos.deleteMany({ casado: true })
+
+--28--
+db.alumnos.deleteOne({ materias: "SIS258" })
