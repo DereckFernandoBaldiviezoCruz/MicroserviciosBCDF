@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agenda</title>
+</head>
+<body>
+  <h1>Contactos</h1>
+  <a href="/new">➕ Nuevo contacto</a>
+  <ul>
+    <% contactos.forEach(c => { %>
+      <li>
+        <%= c.nombres %> <%= c.apellidos %> - <%= c.celular %>
+        <a href="/edit/<%= c._id %>">✏️ Editar</a>
+        <form action="/<%= c._id %>?_method=DELETE" method="POST" style="display:inline;">
+          <button type="submit">🗑️ Eliminar</button>
+        </form>
+      </li>
+    <% }) %>
+  </ul>
+</body>
+</html>
