@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo_container
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - appnet
+
+  app:
+    build: .
+    container_name: tareas_app
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongo
+    networks:
+      - appnet
+
+volumes:
+  mongo_data:
+
+networks:
+  appnet:

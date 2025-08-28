@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Practica 3</title>
+</head>
+<body>
+  <h2>Calculadora</h2>
+  <form id="formulario">
+    <label>A: <input type="number" name="a" required></label><br><br>
+    <label>B: <input type="number" name="b" required></label><br><br>
+
+    <label>Operación:
+      <select name="operacion">
+        <option value="sumar">Sumar</option>
+        <option value="restar">Restar</option>
+        <option value="multiplicar">Multiplicar</option>
+        <option value="dividir">Dividir</option>
+      </select>
+    </label><br><br>
+
+    <button type="submit">Calcular</button>
+  </form>
+
+  <h3>Resultado: <span id="resultado"></span></h3>
+
+  <script>
+    const form = document.getElementById("formulario");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        a: form.a.value,
+        b: form.b.value,
+        operacion: form.operacion.value,
+      };
+
+      const res = await fetch("/calcular", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      document.getElementById("resultado").innerText = json.resultado;
+    });
+  </script>
+</body>
+</html>

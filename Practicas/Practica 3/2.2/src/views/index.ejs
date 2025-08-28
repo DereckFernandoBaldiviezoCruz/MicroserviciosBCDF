@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lista de Tareas</title>
+  <style>
+    .descripcion { display: none; margin-left: 20px; color: gray; }
+    .tarea-item { cursor: pointer; margin-bottom: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Lista de Tareas</h1>
+
+  <!-- Formulario para agregar tarea -->
+  <form id="formTarea">
+    <input type="text" name="titulo" placeholder="Título" required>
+    <input type="text" name="descripcion" placeholder="Descripción" required>
+    <select name="estado">
+      <option value="pendiente">Pendiente</option>
+      <option value="en progreso">En progreso</option>
+      <option value="completado">Completado</option>
+    </select>
+    <button type="submit">Agregar Tarea</button>
+  </form>
+
+  <ul id="listaTareas">
+    <% tareas.forEach(t => { %>
+      <li class="tarea-item">
+        <strong><%= t.titulo %></strong> - <%= t.estado %>
+        <button onclick="eliminarTarea('<%= t._id %>')">Eliminar</button>
+        <div class="descripcion"><%= t.descripcion %></div>
+      </li>
+    <% }) %>
+  </ul>
+
+  <script>
+    const form = document.getElementById('formTarea');
+
+    // Enviar formulario
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        titulo: form.titulo.value,
+        descripcion: form.descripcion.value,
+        estado: form.estado.value
+      };
+      const res = await fetch('/tareas', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      if(res.ok) location.reload();
+    });
+
+    // Eliminar tarea
+    async function eliminarTarea(id) {
+      const res = await fetch(`/tareas/${id}`, { method: 'DELETE' });
+      if(res.ok) location.reload();
+    }
+
+    // Mostrar/ocultar descripción al hacer clic en la tarea
+    document.querySelectorAll('.tarea-item').forEach(item => {
+      item.addEventListener('click', e => {
+        if(e.target.tagName !== 'BUTTON') { // evitar conflicto con botón eliminar
+          const desc = item.querySelector('.descripcion');
+          desc.style.display = desc.style.display === 'none' ? 'block' : 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

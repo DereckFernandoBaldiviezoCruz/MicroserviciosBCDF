@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Usuarios</title>
+</head>
+<body>
+  <h1>Lista de Usuarios</h1>
+  <a href="/nuevo">Agregar Usuario</a>
+  <table border="1">
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Correo</th>
+      <th>Fecha de Registro</th>
+      <th>Acción</th>
+    </tr>
+    <% usuarios.forEach(u => { %>
+      <tr>
+        <td><%= u.id %></td>
+        <td><%= u.nombre %></td>
+        <td><%= u.correo %></td>
+        <td><%= u.fecha_registro %></td>
+        <td><a href="/eliminar/<%= u.id %>">Eliminar</a></td>
+      </tr>
+    <% }) %>
+  </table>
+</body>
+</html>
