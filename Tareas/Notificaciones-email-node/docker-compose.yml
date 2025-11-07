@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  notifier:
+    build: .
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      QUEUE_NAME: notify_purchase_paid
+      PREFETCH_COUNT: 16
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      SMTP_SECURE: "false"
+      SMTP_STARTTLS: "false"
+      SENDER_EMAIL: no-reply@tickets.example
+      SENDER_NAME: Ticketing Notifications
+      PORT: 8000
+    ports:
+      - "8000:8000"

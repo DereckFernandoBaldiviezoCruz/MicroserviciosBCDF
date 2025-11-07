@@ -1,0 +1,7 @@
+node_modules
+.npmcache
+__pycache__
+*.pyc
+vendor
+venv
+.env
